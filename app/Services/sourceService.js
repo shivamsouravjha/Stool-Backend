@@ -2,10 +2,12 @@ import GroupRepository from '../Database-interaction/GroupRepository';
 import * as Exceptions from '../Exceptions/exceptions';
 import SourceRepository from '../Database-interaction/sourceRepositroy';
 import SourceModel from "../Models/sourceModel";
+import SMS from '../Database-interaction/AccountRepository'
 
 export default class AccountService{
     constructor() {
         this.repository = new SourceRepository();
+        this.sendSMS = new SMS();
     }
 
 
@@ -36,6 +38,7 @@ export default class AccountService{
 
             } 
             const reply =  await this.repository.deleteSource(groupInfo,sourceInfo);
+            this.sendSMS.sendWhatsappp(`Source removed from the group ${groupInfo.groupName}`);
             return reply;
         } catch (error) {
             throw error;
@@ -60,6 +63,7 @@ export default class AccountService{
                 throw {"message":`Source price more than current fund of group, exceeds by = ${price*unitsPurchase-groupInfo['fund']}`}
             }
             const response = await this.repository.createSource(sourceModel,groupInfo,approved);
+            approved?this.sendSMS.sendWhatsappp(`New source added in the group ${groupInfo.groupName}`):this.sendSMS.sendWhatsappp(`New source addition request in the group ${groupInfo.groupName}`);
             return response;
         } catch (error) {
             throw error;
@@ -140,6 +144,7 @@ export default class AccountService{
                 sourceInfo['price'] = args['price'];
                 await this.repository.editSource(sourceInfo);
                 await this.repository.editSource(groupInfo);
+                this.sendSMS.sendWhatsappp(`Source amount edited in group ${groupInfo.groupName}`);
                 return {'success':true,message:"Source quantity edited"};
             }else{
                 sourceInfo.type = "EDIT";
@@ -147,6 +152,7 @@ export default class AccountService{
                 sourceInfo['editPrice'] = args.price;
                 sourceInfo['approved'] = false;
                 await this.repository.editSource(sourceInfo);
+                this.sendSMS.sendWhatsappp(`Source submitted for edit in group ${groupInfo.groupName}`);
                 return {'success':true,message:"Edit suggestion sent to Group Owner"};
             }           
         } catch (error) {

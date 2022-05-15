@@ -1,11 +1,14 @@
 import GroupModel from "../Models/groupModel";
 import UserModel from "../Models/userModel";
-import SourceModel from "../Models/sourceModel";
+import SMS from "../Database-interaction/AccountRepository";
 import Transaction from "../Models/transaction";
 import mongoose from 'mongoose';
 mongoose.models = {GroupModel,UserModel}
 
 export default class GroupRepository {
+    constructor() {
+        this.SMS = new SMS();
+      }
     async findUser (obj) {
         try {
             const found = await UserModel.findById(obj)
@@ -84,9 +87,12 @@ export default class GroupRepository {
             await verifyuserId.save({ session: sess }); 
 
             await verifyGroupId.save({ session: sess }); 
-
             await sess.commitTransaction(); 
+            this.SMS.sendSMS(`Congratulations for joining group ${verifyGroupId.groupName} witha deposit of ${args.amount},left balance is ${verifyuserId.funds}`);
+            this.SMS.sendEmail(verifyuserId.email,verifyuserId.name,'Summary of Group Joining',`You joined ${verifyGroupId.groupName} with a deposit amount of ${args.deposited_amount},updated balance is ${verifyuserId.funds}.`);
+
             return {'message':'Group Joined','success':true};
+
         } catch (error) {
             throw error;
         }
@@ -106,6 +112,9 @@ export default class GroupRepository {
             if(!verifyGroupId.members.length){
                 await verifyGroupId.remove();
             }
+            this.SMS.sendSMS(`You left ${verifyGroupId.groupName} with a due amount of ${args.due_amount},updated balance is ${verifyuserId.funds}`);
+            this.SMS.sendEmail(verifyuserId.email,verifyuserId.name,'Summary of Group Leaving',`You left ${verifyGroupId.groupName} with a due amount of ${args.due_amount},updated balance is ${verifyuserId.funds}. You were returned ${args.returned_amount},the result is ${args.result}`);
+
             return {'message':'Group Left','success':true};
         } catch (error) {
             throw error;
@@ -157,10 +166,11 @@ export default class GroupRepository {
             ownerDetails.groups.push(groupModel._id); 
             await ownerDetails.save({ session: sess }); 
             await sess.commitTransaction(); 
+            this.sendSMS.sendSMS(`Dear ${ownerDetails.name},you successfully created a group ${groupName} share it with friends and grow together`);
         } catch (error) {
             throw error
         }
         return {"success":true};
     }
-
+ 
 }

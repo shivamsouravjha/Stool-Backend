@@ -5,20 +5,13 @@ import Routes from './routes/routes'
 import Error from './app/Exceptions/error';
 require('dotenv').config();
 const app = express();
-app.use(bodyParser.json());
+var cors = require('cors')
+
+app.use(express.json());
 
 
 // removing the CORS error
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
-  next();
-}); 
-
+app.use(cors())
 app.use('/api/users', Routes.AccountApiRouter); ///for user commands
 app.use('/api/groups', Routes.GroupApiRouter);  ///for group commands
 app.use('/api/source', Routes.SourceApiRouter);   ////for source commands

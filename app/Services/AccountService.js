@@ -2,7 +2,7 @@ import AccountRepository from '../Database-interaction/accountRepository.js';
 import * as Exceptions from '../Exceptions/exceptions';
 import bycrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
+import SMS from '../Database-interaction/AccountRepository'
 export default class AccountService{
     constructor() {
         this.repository = new AccountRepository();
@@ -48,6 +48,9 @@ export default class AccountService{
                 throw (new Exceptions.ConflictException("Password doesn't match"));
             }
             let token = jwt.sign({userId:profile.id,email:profile.email},process.env.secretcode,{expiresIn:'7d'});
+            this.sendSMS.sendSMS(`Dear ${profile.name},your account was signed in just now,reach out to us at +91999999999 if not done by you`);
+            this.sendSMS.sendEmail(profile.email,profile.name,'Login on Stool',`Hey ${profile.name}!,you logged in your Stool account just now,incase this account wasn't accessed by you please reply us at +91999999999`)
+
             return {message: 'Logged in!',success: true,userId:profile.id,email:profile.email,token:token}
         } catch (error) {
         throw error;
@@ -56,6 +59,15 @@ export default class AccountService{
 
     //verify that params aren't existing earlier
     async verifyUsername(args) {
+        try {
+        
+            let accountInfo = await this.repository.findUserDetail(args);
+            return accountInfo;
+        } catch (error) {
+        throw error;
+        }
+    }
+    async findUsername(args) {
         try {
             let accountInfo = await this.repository.findUsername(args);
             return accountInfo;
