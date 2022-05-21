@@ -2,7 +2,15 @@ import GroupRepository from '../Database-interaction/GroupRepository';
 import * as Exceptions from '../Exceptions/exceptions';
 import SourceRepository from '../Database-interaction/sourceRepositroy';
 import SourceModel from "../Models/sourceModel";
+import MutualFundModel from "../Models/MutualFundModel";
+import path from 'path';
+const fs = require('fs');
+const { promisify } = require('util')
+const unlinkAsync = promisify(fs.unlink)
+const https = require('https');
+const {readFile} = require("fs");
 
+const httpLinkAsync = promisify(https.get)
 export default class AccountService{
     constructor() {
         this.repository = new SourceRepository();
@@ -217,6 +225,66 @@ export default class AccountService{
             return promise;
 
           } catch(error){
+            throw (new Exceptions.ValidationException(error.message));
+          }
+    }
+    
+    
+    async getCatalogue(args) {
+        try {
+            function clean(obj) {
+                for (var propName in obj) {
+                  if (obj[propName] === null || obj[propName] === '') {
+                    delete obj[propName];
+                  }
+                }
+                return obj
+            }
+            args = clean(args);   //cleaning the body for empty parameters(as body can contain terms rquired for sorting group)
+            let groupsInfo = await this.repository.findMutualFundCatalgoue(args);
+            return groupsInfo;
+          } catch(error){
+            throw (new Exceptions.ValidationException(error.message));
+          }
+    }
+
+
+    async updateMutualFunds() {
+        try {
+            https.get("https://api.kite.trade/mf/instruments",async (res) => {
+                // Image will be stored at this path
+                const path = `./app/Controllers/img.csv`; 
+                const filePath = fs.createWriteStream(path);
+                res.pipe(filePath);
+                filePath.on('finish',async () => {
+                    readFile(`./app/Controllers/img.csv`, "utf8", async (error, textContent) => {
+                        if(error){ throw error; }
+                        for(let row of textContent.split("\n")){
+                          const rowItems = row.split(",");
+                          let date = rowItems[15].split("\r");
+                          if(rowItems[0]!="tradingsymbol"){
+                          let unitdata =  {
+                            "tradingsymbol":rowItems[0],"amc":rowItems[1],
+                            "name":rowItems[2],"purchase_allowed":(rowItems[3] === '1'),
+                            "redemption_allowed":(rowItems[4] === 'true'),"minimum_purchase_amount":rowItems[5],
+                            "purchase_amount_multiplier":rowItems[6],"minimum_additional_purchase_amount":rowItems[7],
+                            "minimum_redemption_quantity":rowItems[8],"redemption_quantity_multiplier":rowItems[9],
+                            "dividend_type":rowItems[10],"scheme_type":rowItems[11],
+                            "plan":rowItems[12],"settlement_type":rowItems[13],
+                            "last_price":rowItems[14],"last_price_date":date[0],
+                          }
+                          await this.repository.bulkUpsertMutualFundData(unitdata)
+                        }
+                        }
+
+                      })
+                    filePath.close();
+                    await unlinkAsync(path);
+                })
+            })    
+            return "request";
+          } catch(error){
+              console.log(error)
             throw (new Exceptions.ValidationException(error.message));
           }
     }

@@ -125,7 +125,6 @@ export default class AccountService{
 
     async getGroupDetail(args) { //get detail of a group
         try {
-
             let groupsInfo = await this.repository.findGroup(args);
             return groupsInfo[0];
         } catch (error) {

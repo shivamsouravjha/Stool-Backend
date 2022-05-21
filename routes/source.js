@@ -39,4 +39,14 @@ SourceApiRouter.post('/setapproval/:sid/:uid/', (request, response) => {
   groupController.setApproval(request);
 });
 
+//getting mutual fund data
+SourceApiRouter.post('/getcatalogue/', (request, response) => {
+  const groupController = new SourceController(response);
+  groupController.mutualFundCatalogue(request);
+});
+
+SourceApiRouter.post('/uploaddata/', (request, response) => {
+  const groupController = new SourceController(response);
+  groupController.uploadMutualFundData(request);
+});
 export default SourceApiRouter;
