@@ -48,8 +48,6 @@ export default class AccountService{
                 throw (new Exceptions.ConflictException("Password doesn't match"));
             }
             let token = jwt.sign({userId:profile.id,email:profile.email},process.env.secretcode,{expiresIn:'7d'});
-            this.sendSMS.sendSMS(`Dear ${profile.name},your account was signed in just now,reach out to us at +91999999999 if not done by you`);
-            this.sendSMS.sendEmail(profile.email,profile.name,'Login on Stool',`Hey ${profile.name}!,you logged in your Stool account just now,incase this account wasn't accessed by you please reply us at +91999999999`)
 
             return {message: 'Logged in!',success: true,userId:profile.id,email:profile.email,token:token}
         } catch (error) {

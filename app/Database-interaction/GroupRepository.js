@@ -88,8 +88,6 @@ export default class GroupRepository {
 
             await verifyGroupId.save({ session: sess }); 
             await sess.commitTransaction(); 
-            this.SMS.sendSMS(`Congratulations for joining group ${verifyGroupId.groupName} witha deposit of ${args.amount},left balance is ${verifyuserId.funds}`);
-            this.SMS.sendEmail(verifyuserId.email,verifyuserId.name,'Summary of Group Joining',`You joined ${verifyGroupId.groupName} with a deposit amount of ${args.deposited_amount},updated balance is ${verifyuserId.funds}.`);
 
             return {'message':'Group Joined','success':true};
 
@@ -112,8 +110,6 @@ export default class GroupRepository {
             if(!verifyGroupId.members.length){
                 await verifyGroupId.remove();
             }
-            this.SMS.sendSMS(`You left ${verifyGroupId.groupName} with a due amount of ${args.due_amount},updated balance is ${verifyuserId.funds}`);
-            this.SMS.sendEmail(verifyuserId.email,verifyuserId.name,'Summary of Group Leaving',`You left ${verifyGroupId.groupName} with a due amount of ${args.due_amount},updated balance is ${verifyuserId.funds}. You were returned ${args.returned_amount},the result is ${args.result}`);
 
             return {'message':'Group Left','success':true};
         } catch (error) {
@@ -166,7 +162,6 @@ export default class GroupRepository {
             ownerDetails.groups.push(groupModel._id); 
             await ownerDetails.save({ session: sess }); 
             await sess.commitTransaction(); 
-            this.sendSMS.sendSMS(`Dear ${ownerDetails.name},you successfully created a group ${groupName} share it with friends and grow together`);
         } catch (error) {
             throw error
         }

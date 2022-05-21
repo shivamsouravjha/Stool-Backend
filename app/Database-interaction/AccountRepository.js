@@ -50,8 +50,6 @@ export default class AccountRepository {
         try{
             userDetails =  await userModel.save();
             token = jwt.sign({userId:userDetails.id,email:userDetails.email},process.env.secretcode,{expiresIn:'7d'});
-            this.sendSMS(`Welcome to Stool ${name},your phone number ${number} is added to our platform,incase this account wasn't created by you please reply us at +91999999999`)
-            this.sendEmail(email,name,'Signup on Stool',`Welcome to Stool ${name},your Email ${email} is added to our platform,incase this account wasn't created by you please reply us at +91999999999`)
         } catch (error) {
             console.log(error)
             return "error at adding"
