@@ -45,7 +45,7 @@ export default class SourceRepository {
 
     async findMutualFundCatalgoue (obj) {
         try {            
-            const found = await MutualFundModel.find(obj).skip(100).limit(20);
+            const found = await MutualFundModel.find(obj);
             return found;
         } catch (error) {
             throw error
@@ -54,8 +54,7 @@ export default class SourceRepository {
     
     async bulkUpsertMutualFundData (obj) {
         try {            
-            const found = await MutualFundModel.findOneAndUpdate({"tradingsymbol":obj['tradingsymbol']},obj,{                upsert: true // Make this update into an upsert
-              });
+            const found = await MutualFundModel.findOneAndUpdate({"tradingsymbol":obj['tradingsymbol']},obj);
             return found;
         } catch (error) {
             throw error

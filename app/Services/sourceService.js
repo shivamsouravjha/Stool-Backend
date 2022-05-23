@@ -259,6 +259,7 @@ export default class AccountService{
                 filePath.on('finish',async () => {
                     readFile(`./app/Controllers/img.csv`, "utf8", async (error, textContent) => {
                         if(error){ throw error; }
+                        let count=0
                         for(let row of textContent.split("\n")){
                           const rowItems = row.split(",");
                           let date = rowItems[15].split("\r");
@@ -274,6 +275,8 @@ export default class AccountService{
                             "last_price":rowItems[14],"last_price_date":date[0],
                           }
                           await this.repository.bulkUpsertMutualFundData(unitdata)
+                          console.log(count)
+                          count+=1
                         }
                         }
 
