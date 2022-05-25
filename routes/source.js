@@ -49,4 +49,15 @@ SourceApiRouter.post('/uploaddata/', (request, response) => {
   const groupController = new SourceController(response);
   groupController.uploadMutualFundData(request);
 });
+
+//getting stocks data
+SourceApiRouter.post('/getcatalogueStocks/', (request, response) => {
+  const groupController = new SourceController(response);
+  groupController.stocksCatalogue(request);
+});
+
+SourceApiRouter.post('/uploadStockdata/', (request, response) => {
+  const groupController = new SourceController(response);
+  groupController.uploadStocksData(request);
+});
 export default SourceApiRouter;

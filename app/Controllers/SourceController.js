@@ -124,11 +124,39 @@ export default class CompanyController extends Controller {
       this.handleException(error);
     } 
   }
+  
+  stocksCatalogue (request) {
+    try {
+      let promise;
+      promise = this.service.getCatalogue(request.body);
+      promise.then(res=>{
+        this.sendResponse(res);
+      }).catch(error =>{
+        this.handleException(error);
+      })
+    } catch(error){
+      this.handleException(error);
+    } 
+  }
 
   uploadMutualFundData (request) {
     try {
       let promise;
       promise = this.service.updateMutualFunds(request);
+      promise.then(res=>{
+
+        this.sendResponse(res);
+      }).catch(error =>{
+        this.handleException(error);
+      })
+    } catch(error){
+      this.handleException(error);
+    } 
+  }
+  uploadStocksData (request) {
+    try {
+      let promise;
+      promise = this.service.updateStocks(request);
       promise.then(res=>{
 
         this.sendResponse(res);

@@ -2,6 +2,7 @@ import GroupModel from "../Models/groupModel";
 import UserModel from "../Models/userModel";
 import SourceModel from "../Models/sourceModel";
 import MutualFundModel from "../Models/MutualFundModel";
+import StockModel from "../Models/StockModel";
 import mongoose from 'mongoose';
 mongoose.models = {GroupModel,UserModel}
 
@@ -55,6 +56,18 @@ export default class SourceRepository {
     async bulkUpsertMutualFundData (obj) {
         try {            
             const found = await MutualFundModel.findOneAndUpdate({"tradingsymbol":obj['tradingsymbol']},obj);
+            return found;
+        } catch (error) {
+            throw error
+        }
+    } 
+    
+    async bulkUpsertStocksData (obj) {
+        try {            
+            const objData = {symbol:obj['symbol'],token:obj['token'],name:obj['name'],expiry:obj['expiry'],strike:obj['strike'],lotsize:obj['lotsize'],instrumenttype:obj['instrumenttype'],exch_seg:obj['exch_seg'],tick_size:obj['tick_size']}
+
+            const found = await StockModel.findOneAndUpdate({"symbol":obj['symbol']},objData,{upsert:true});
+            console.log(objData,found)
             return found;
         } catch (error) {
             throw error

@@ -1,16 +1,12 @@
-import GroupRepository from '../Database-interaction/GroupRepository';
 import * as Exceptions from '../Exceptions/exceptions';
 import SourceRepository from '../Database-interaction/sourceRepositroy';
 import SourceModel from "../Models/sourceModel";
-import MutualFundModel from "../Models/MutualFundModel";
-import path from 'path';
+import fetch from 'node-fetch';
 const fs = require('fs');
 const { promisify } = require('util')
 const unlinkAsync = promisify(fs.unlink)
 const https = require('https');
 const {readFile} = require("fs");
-
-const httpLinkAsync = promisify(https.get)
 export default class AccountService{
     constructor() {
         this.repository = new SourceRepository();
@@ -253,11 +249,11 @@ export default class AccountService{
         try {
             https.get("https://api.kite.trade/mf/instruments",async (res) => {
                 // Image will be stored at this path
-                const path = `./app/Controllers/img.csv`; 
+                const path = `./app/Controllers/mutualFund.csv`; 
                 const filePath = fs.createWriteStream(path);
                 res.pipe(filePath);
                 filePath.on('finish',async () => {
-                    readFile(`./app/Controllers/img.csv`, "utf8", async (error, textContent) => {
+                    readFile(`./app/Controllers/mutualFund.csv`, "utf8", async (error, textContent) => {
                         if(error){ throw error; }
                         let count=0
                         for(let row of textContent.split("\n")){
@@ -285,6 +281,27 @@ export default class AccountService{
                     await unlinkAsync(path);
                 })
             })    
+            return "request";
+          } catch(error){
+              console.log(error)
+            throw (new Exceptions.ValidationException(error.message));
+          }
+    }
+    
+    async updateStocks() {
+        try {
+            var url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json';            
+           
+            let settings = { method: "Get" };
+            fetch(url, settings)
+            .then(res => res.json())
+            .then(async(json) => {
+                for (let i = 0; i < json.length; i++) {
+                    console.log(i)
+                    if(json[i].exch_seg=="BSE"||json[i].exch_seg=="NSE")
+                    await this.repository.bulkUpsertStocksData(json[i])
+                  }                
+            });
             return "request";
           } catch(error){
               console.log(error)

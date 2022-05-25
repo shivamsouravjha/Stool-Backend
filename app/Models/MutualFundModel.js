@@ -3,8 +3,8 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const schema=  mongoose.Schema;
 
-const groupSchema = new schema({
-    tradingsymbol: {type :String },
+const MFSchema = new schema({
+    tradingsymbol: {type :String ,unique:true },
     amc: {type :String },
     name: {type :String},
     purchase_allowed: {type :Boolean },
@@ -24,5 +24,5 @@ const groupSchema = new schema({
     versionKey: false 
   });
 
-groupSchema.plugin(uniqueValidator);
-module.exports = mongoose.model('MutualFunds',groupSchema);
+MFSchema.plugin(uniqueValidator);
+module.exports = mongoose.model('MutualFunds',MFSchema);
