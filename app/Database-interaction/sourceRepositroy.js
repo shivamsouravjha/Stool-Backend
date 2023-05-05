@@ -1,5 +1,5 @@
-import GroupModel from "../Models/groupModel";
-import UserModel from "../Models/userModel";
+import GroupModel from "../Models/GroupModel";
+import UserModel from "../Models/UserModel";
 import SourceModel from "../Models/sourceModel";
 import MutualFundModel from "../Models/MutualFundModel";
 import StockModel from "../Models/StockModel";

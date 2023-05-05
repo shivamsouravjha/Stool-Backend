@@ -1,6 +1,6 @@
-import Controller from './controller';
-import * as Exceptions from '../Exceptions/exceptions'
-import Validators from '../Validators/validators';
+import Controller from './Controller';
+import * as Exceptions from '../Exceptions/Exceptions'
+import Validators from '../Validators/Validators';
 import SourceService from '../Services/sourceService';
 export default class CompanyController extends Controller {
     constructor(response) {

@@ -1,8 +1,7 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import Routes from './routes/routes'
-import Error from './app/Exceptions/error';
+import Error from './app/Exceptions/Error';
 require('dotenv').config();
 const app = express();
 var cors = require('cors')
@@ -33,10 +32,9 @@ app.use((error, req, res, next) => {          //special 4 term function that let
 });
   
 
-
 mongoose
     .connect(
-      `mongodb://${process.env.name}:${process.env.password}@cluster0-shard-00-00.dm1xw.mongodb.net:27017,cluster0-shard-00-01.dm1xw.mongodb.net:27017,cluster0-shard-00-02.dm1xw.mongodb.net:27017/${process.env.db}?ssl=true&replicaSet=atlas-x6eag6-shard-0&authSource=admin&retryWrites=true&w=majority`,
+      `mongodb+srv://${process.env.name}:${process.env.password}@cluster0.kzetf.mongodb.net/?retryWrites=true&w=majority`,
       { useNewUrlParser: true, useUnifiedTopology: true,useCreateIndex: true }
       
     )
