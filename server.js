@@ -40,7 +40,7 @@ mongoose
     )
     .then(() => {
       console.log('listening at port',process.env.PORT || 5001 )
-      app.listen(process.env.PORT || 5001);
+      app.listen(process.env.PORT);
     })
     .catch(err => {
       console.log(err);
